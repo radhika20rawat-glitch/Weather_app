@@ -1,0 +1,597 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   WeatherWise — style.css
+   Deep blue dashboard, glassmorphism cards, city-skyline hero feel
+   Fonts: Nunito (display) + Rubik (body)
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --font-d: 'Nunito', sans-serif;
+  --font-b: 'Rubik', sans-serif;
+
+  /* Dark */
+  --bg:       #0a1628;
+  --bg2:      #0f1f38;
+  --bg3:      #142844;
+  --card:     rgba(15,31,56,0.85);
+  --card-b:   rgba(20,40,68,0.9);
+  --border:   rgba(100,160,255,0.12);
+  --border2:  rgba(100,160,255,0.22);
+  --text1:    #e8f0fe;
+  --text2:    #8ca8d4;
+  --text3:    #4a6a9a;
+  --accent:   #4a9eff;
+  --accent2:  #63b3ff;
+  --gold:     #fbbf24;
+  --teal:     #34d399;
+  --shadow:   0 8px 32px rgba(0,0,0,0.45);
+  --shadow2:  0 16px 48px rgba(0,0,0,0.6);
+  --hero-grad: linear-gradient(180deg, rgba(10,22,40,0.1) 0%, rgba(10,22,40,0.85) 100%);
+
+  /* ── SVG Weather Icon Data URIs ────────────────────────────────────
+     Each --icon-* variable holds a self-contained SVG as a data URI.
+     Use them wherever you need a weather symbol:
+       background-image: var(--icon-sun);
+       content: var(--icon-moon);   (inside ::before / ::after)
+     Or set them on <img> tags via JS:  img.src = getComputedStyle(…).getPropertyValue('--icon-sun').trim().slice(4,-1).replace(/"/g,'');
+  ─────────────────────────────────────────────────────────────────── */
+
+  /* ☀️  Sun — golden disc with 8 tapered rays */
+  --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='sg' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffe97a'/%3E%3Cstop offset='100%25' stop-color='%25ffa500'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg transform='translate(32,32)'%3E%3C!-- Rays --%3E%3Cg stroke='%23ffcc00' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='0' y1='-25' x2='0' y2='-16'/%3E%3Cline x1='0' y1='16' x2='0' y2='25'/%3E%3Cline x1='-25' y1='0' x2='-16' y2='0'/%3E%3Cline x1='16' y1='0' x2='25' y2='0'/%3E%3Cline x1='-17.7' y1='-17.7' x2='-11.3' y2='-11.3'/%3E%3Cline x1='11.3' y1='11.3' x2='17.7' y2='17.7'/%3E%3Cline x1='17.7' y1='-17.7' x2='11.3' y2='-11.3'/%3E%3Cline x1='-11.3' y1='11.3' x2='-17.7' y2='17.7'/%3E%3C/g%3E%3C!-- Disc --%3E%3Ccircle r='13' fill='url(%23sg)'/%3E%3Ccircle r='13' fill='none' stroke='%23ffaa00' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* 🌙  Crescent Moon — filled arc with subtle inner glow */
+  --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='mg' cx='40%25' cy='40%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%25e2e8f0'/%3E%3Cstop offset='100%25' stop-color='%2594a3b8'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M38 10 A20 20 0 1 0 38 54 A14 14 0 1 1 38 10 Z' fill='url(%23mg)' stroke='%23cbd5e1' stroke-width='1'/%3E%3C/svg%3E");
+
+  /* ⛅  Cloud — puffy cloud with highlighted top edge */
+  --icon-cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='cg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%25dde8fa'/%3E%3Cstop offset='100%25' stop-color='%2594b4d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M52 40a10 10 0 0 0-1-19.9A14 14 0 0 0 24 26a8 8 0 1 0 0 14Z' fill='url(%23cg)' stroke='%2375a0cc' stroke-width='1.2'/%3E%3C/svg%3E");
+
+  /* 🌤  Partly Cloudy Day — sun peeking behind a cloud */
+  --icon-partly-cloudy-day: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='sg2' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffe97a'/%3E%3Cstop offset='100%25' stop-color='%23ffa500'/%3E%3C/radialGradient%3E%3ClinearGradient id='cg2' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23dde8fa'/%3E%3Cstop offset='100%25' stop-color='%2394b4d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3C!-- Sun (behind) --%3E%3Cg transform='translate(20,20)'%3E%3Cg stroke='%23ffcc00' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='0' y1='-18' x2='0' y2='-12'/%3E%3Cline x1='12.7' y1='-12.7' x2='8.5' y2='-8.5'/%3E%3Cline x1='18' y1='0' x2='12' y2='0'/%3E%3Cline x1='-12.7' y1='-12.7' x2='-8.5' y2='-8.5'/%3E%3C/g%3E%3Ccircle r='10' fill='url(%23sg2)'/%3E%3C/g%3E%3C!-- Cloud (front) --%3E%3Cpath d='M53 42a9 9 0 0 0-1-17.9A13 13 0 0 0 27 30a7 7 0 1 0 0 12Z' fill='url(%23cg2)' stroke='%2375a0cc' stroke-width='1.2'/%3E%3C/svg%3E");
+
+  /* 🌙⛅  Partly Cloudy Night — moon behind a cloud */
+  --icon-partly-cloudy-night: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='mg2' cx='40%25' cy='40%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23e2e8f0'/%3E%3Cstop offset='100%25' stop-color='%2394a3b8'/%3E%3C/radialGradient%3E%3ClinearGradient id='cg3' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23dde8fa'/%3E%3Cstop offset='100%25' stop-color='%2394b4d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3C!-- Moon (behind) --%3E%3Cpath d='M24 8 A14 14 0 1 0 24 36 A10 10 0 1 1 24 8 Z' fill='url(%23mg2)' stroke='%23cbd5e1' stroke-width='1'/%3E%3C!-- Cloud (front) --%3E%3Cpath d='M53 46a9 9 0 0 0-1-17.9A13 13 0 0 0 27 34a7 7 0 1 0 0 12Z' fill='url(%23cg3)' stroke='%2375a0cc' stroke-width='1.2'/%3E%3C/svg%3E");
+
+  /* 🌧  Rain — cloud with falling rain lines */
+  --icon-rain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='rg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23a8c0d8'/%3E%3Cstop offset='100%25' stop-color='%2368899e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 34a9 9 0 0 0-1-17.9A13 13 0 0 0 23 22a7 7 0 1 0 0 12Z' fill='url(%23rg)' stroke='%2356798e' stroke-width='1.2'/%3E%3Cg stroke='%234a9eff' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='22' y1='40' x2='19' y2='50'/%3E%3Cline x1='32' y1='40' x2='29' y2='52'/%3E%3Cline x1='42' y1='40' x2='39' y2='50'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* ❄️  Snow — cloud with snowflake dots */
+  --icon-snow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='sg3' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23e8f4fd'/%3E%3Cstop offset='100%25' stop-color='%23b0cce0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 34a9 9 0 0 0-1-17.9A13 13 0 0 0 23 22a7 7 0 1 0 0 12Z' fill='url(%23sg3)' stroke='%2390b8cc' stroke-width='1.2'/%3E%3Cg fill='%23a8d4f0'%3E%3Ccircle cx='22' cy='46' r='3'/%3E%3Ccircle cx='32' cy='50' r='3'/%3E%3Ccircle cx='42' cy='46' r='3'/%3E%3Ccircle cx='27' cy='56' r='2.5'/%3E%3Ccircle cx='37' cy='56' r='2.5'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* ⛈  Thunderstorm — dark cloud with lightning bolt */
+  --icon-thunder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='tg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%234a5568'/%3E%3Cstop offset='100%25' stop-color='%232d3748'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 32a9 9 0 0 0-1-17.9A13 13 0 0 0 23 20a7 7 0 1 0 0 12Z' fill='url(%23tg)' stroke='%23718096' stroke-width='1.2'/%3E%3Cpolygon points='36,36 28,48 34,48 28,60 44,44 37,44' fill='%23fbbf24' stroke='%23f59e0b' stroke-width='0.8' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* 🌫  Mist / Fog — horizontal haze lines */
+  --icon-mist: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg stroke='%238ca8d4' stroke-width='3' stroke-linecap='round' opacity='0.75'%3E%3Cline x1='10' y1='20' x2='54' y2='20'/%3E%3Cline x1='14' y1='30' x2='50' y2='30'/%3E%3Cline x1='10' y1='40' x2='54' y2='40'/%3E%3Cline x1='16' y1='50' x2='48' y2='50'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* 🌤  Sunrise / Sunset — horizon line with rising sun */
+  --icon-sunrise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='srg' cx='50%25' cy='80%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23ffe97a'/%3E%3Cstop offset='100%25' stop-color='%23f97316'/%3E%3C/radialGradient%3E%3C/defs%3E%3C!-- Horizon --%3E%3Cline x1='8' y1='42' x2='56' y2='42' stroke='%238ca8d4' stroke-width='2' stroke-linecap='round'/%3E%3C!-- Half disc --%3E%3Cpath d='M18 42 A14 14 0 0 1 46 42 Z' fill='url(%23srg)'/%3E%3C!-- Rays above horizon --%3E%3Cg stroke='%23ffcc00' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='32' y1='10' x2='32' y2='18'/%3E%3Cline x1='50' y1='24' x2='45' y2='28'/%3E%3Cline x1='14' y1='24' x2='19' y2='28'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+[data-theme="light"] {
+  --bg:       #e8f4fd;
+  --bg2:      #d0e8f8;
+  --bg3:      #c0dcf4;
+  --card:     rgba(255,255,255,0.82);
+  --card-b:   rgba(255,255,255,0.95);
+  --border:   rgba(30,100,200,0.14);
+  --border2:  rgba(30,100,200,0.28);
+  --text1:    #0d1f3c;
+  --text2:    #2d5080;
+  --text3:    #6a90b8;
+  --accent:   #1a6ed8;
+  --accent2:  #2580f0;
+  --shadow:   0 8px 32px rgba(30,80,160,0.14);
+  --shadow2:  0 16px 48px rgba(30,80,160,0.2);
+  --hero-grad: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(220,240,255,0.85) 100%);
+}
+
+/* ── Weather condition classes ──────────────────────────────────────── */
+body.cond-rain    { --hero-img: url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1200&q=80&fit=crop'); }
+body.cond-snow    { --hero-img: url('https://images.unsplash.com/photo-1491002052546-bf38f186af56?w=1200&q=80&fit=crop'); }
+body.cond-cloud   { --hero-img: url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=1200&q=80&fit=crop'); }
+body.cond-clear   { --hero-img: url('https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1200&q=80&fit=crop'); }
+body.cond-night   { --hero-img: url('https://images.unsplash.com/photo-1435224668334-0f82ec57b605?w=1200&q=80&fit=crop'); }
+body.cond-default { --hero-img: url('https://images.unsplash.com/photo-1492011221367-f47e3ccd77a0?w=1200&q=80&fit=crop'); }
+
+/* ── Reset ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-b);
+  background: var(--bg);
+  color: var(--text1);
+  min-height: 100vh;
+  transition: background 0.5s, color 0.4s;
+}
+
+/* ── Topbar ──────────────────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-d);
+  font-size: 1.25rem; font-weight: 900;
+  color: var(--text1);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.brand-icon { width: 36px; height: 36px; }
+
+.search-area { flex: 1; max-width: 440px; margin: 0 auto; }
+.search-box {
+  display: flex; gap: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74,158,255,0.2);
+}
+#cityInput {
+  flex: 1; background: none; border: none; outline: none;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-b); font-size: 0.9rem;
+  color: var(--text1);
+}
+#cityInput::placeholder { color: var(--text3); }
+.search-btn {
+  background: var(--accent); border: none;
+  padding: 0 1rem; cursor: pointer; color: #fff;
+  display: flex; align-items: center; transition: background 0.2s;
+}
+.search-btn:hover { background: var(--accent2); }
+.search-btn svg { width: 16px; height: 16px; }
+
+.loc-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text2); padding: 0.5rem 1rem;
+  border-radius: 50px; cursor: pointer; font-size: 0.82rem;
+  font-family: var(--font-b); white-space: nowrap;
+  transition: all 0.2s;
+}
+.loc-btn svg { width: 14px; height: 14px; }
+.loc-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.mode-btns { display: flex; gap: 0.5rem; }
+.mode-btn {
+  padding: 0.45rem 0.9rem; border-radius: 50px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--text2); cursor: pointer; font-size: 0.8rem;
+  font-family: var(--font-b); transition: all 0.2s;
+}
+.mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.mode-btn:hover:not(.active) { background: var(--bg3); color: var(--text1); }
+
+/* ── Loader ──────────────────────────────────────────────────────────── */
+.loader-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(10,22,40,0.8);
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.loader-overlay.show { display: flex; }
+.loader-box {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  background: var(--card-b);
+  padding: 2rem 3rem; border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text2); font-size: 0.9rem;
+}
+.spin-ring {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error toast ─────────────────────────────────────────────────────── */
+.error-toast {
+  display: none; align-items: center; gap: 0.75rem;
+  position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+  z-index: 500;
+  background: rgba(220,50,50,0.15);
+  border: 1px solid rgba(220,50,50,0.35);
+  backdrop-filter: blur(12px);
+  padding: 0.8rem 1.2rem; border-radius: 14px;
+  color: #fca5a5; font-size: 0.88rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+  max-width: 90vw;
+}
+.error-toast.show { display: flex; }
+.err-icon { font-size: 1rem; }
+.error-toast button { margin-left: auto; background: none; border: none; cursor: pointer; color: #fca5a5; }
+
+/* ── Card base ───────────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  transition: background 0.4s, border 0.4s;
+  overflow: hidden;
+}
+.card-title {
+  font-family: var(--font-d);
+  font-size: 0.8rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text2); padding: 1rem 1.2rem 0.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* ── Main grid ───────────────────────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 1.2rem auto;
+  padding: 0 1.2rem 2rem;
+}
+
+/* ── Hero card ───────────────────────────────────────────────────────── */
+.weather-hero {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 420px;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 0;
+  background-image: var(--hero-img);
+  background-size: cover;
+  background-position: center 40%;
+  transition: background-image 0.8s ease;
+}
+
+.hero-bg-overlay {
+  position: absolute; inset: 0;
+  background: var(--hero-grad);
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.weather-hero > * { position: relative; z-index: 1; }
+
+.hero-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 1.4rem 1.6rem 0.8rem;
+  gap: 1rem;
+}
+
+.hero-city {
+  font-family: var(--font-d);
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 900; line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.hero-datetime {
+  font-size: 0.82rem; color: rgba(255,255,255,0.75);
+  margin-top: 0.3rem; text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+.hero-stats-mini {
+  display: flex; flex-direction: column; gap: 0.45rem;
+  background: rgba(10,22,40,0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(100,160,255,0.15);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  min-width: 155px;
+}
+.mini-stat {
+  display: flex; align-items: center; gap: 0.55rem;
+  font-size: 0.78rem;
+}
+.mini-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+.mini-label { color: rgba(200,220,255,0.6); font-size: 0.7rem; line-height: 1; }
+.mini-val   { font-weight: 600; color: #fff; font-size: 0.82rem; line-height: 1.2; }
+
+.hero-center {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.5rem 1.6rem;
+}
+
+/* ── Weather icon (SVG data-URI applied as background-image) ─────────
+   .hero-weather-icon, .h-icon, .fc-icon, .sun-img all use
+   background-image so JS just sets data-condition and CSS does the rest.
+   Class helpers: .wi-sun  .wi-moon  .wi-cloud  etc.
+───────────────────────────────────────────────────────────────────── */
+.weather-icon {
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Apply the correct SVG based on the data-condition attribute */
+.weather-icon[data-condition="clear-day"]   { background-image: var(--icon-sun); }
+.weather-icon[data-condition="clear-night"] { background-image: var(--icon-moon); }
+.weather-icon[data-condition="cloudy"]      { background-image: var(--icon-cloud); }
+.weather-icon[data-condition="partly-cloudy-day"]   { background-image: var(--icon-partly-cloudy-day); }
+.weather-icon[data-condition="partly-cloudy-night"] { background-image: var(--icon-partly-cloudy-night); }
+.weather-icon[data-condition="rain"]        { background-image: var(--icon-rain); }
+.weather-icon[data-condition="snow"]        { background-image: var(--icon-snow); }
+.weather-icon[data-condition="thunder"]     { background-image: var(--icon-thunder); }
+.weather-icon[data-condition="mist"]        { background-image: var(--icon-mist); }
+.weather-icon[data-condition="sunrise"]     { background-image: var(--icon-sunrise); }
+
+/* Utility classes for direct use without data-condition */
+.wi-sun   { background-image: var(--icon-sun)   !important; }
+.wi-moon  { background-image: var(--icon-moon)  !important; }
+.wi-cloud { background-image: var(--icon-cloud) !important; }
+.wi-rain  { background-image: var(--icon-rain)  !important; }
+.wi-snow  { background-image: var(--icon-snow)  !important; }
+
+.hero-weather-icon {
+  width: clamp(80px,14vw,130px); height: clamp(80px,14vw,130px);
+  filter: drop-shadow(0 6px 20px rgba(255,220,80,0.4));
+}
+
+/* Legacy <img> fallback — hide broken images, show background instead */
+.hero-weather-icon img,
+.h-icon img,
+.fc-icon img,
+.sun-img img {
+  opacity: 0;
+  width: 100%; height: 100%;
+}
+
+.float-anim { animation: float 4s ease-in-out infinite; }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.hero-temp {
+  font-family: var(--font-d);
+  font-size: clamp(3.5rem, 8vw, 5.5rem);
+  font-weight: 900; line-height: 1;
+  letter-spacing: -0.04em;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.hero-temp .unit { font-size: 0.45em; vertical-align: super; }
+
+.hero-desc { font-size: 1.2rem; font-weight: 400; color: rgba(255,255,255,0.9); margin: 0.2rem 0; }
+.hero-feels {
+  display: inline-block;
+  font-size: 0.88rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  padding: 0.3rem 0.8rem; border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.2);
+  margin-top: 0.4rem; color: rgba(255,255,255,0.9);
+}
+.hero-feels span { font-weight: 600; }
+
+.hero-sun {
+  display: flex; align-items: center;
+  padding: 0.8rem 1.4rem;
+  background: rgba(10,22,40,0.6);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(100,160,255,0.1);
+  gap: 0.5rem;
+}
+.sun-item {
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* Sunrise / sunset icons using SVG data URIs */
+.sun-img {
+  width: 36px; height: 36px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.sun-img.is-rise { background-image: var(--icon-sunrise); }
+.sun-img.is-set  { background-image: var(--icon-sun); }
+
+.sun-label { font-size: 0.65rem; color: rgba(200,220,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+.sun-val   { font-size: 0.88rem; font-weight: 600; color: var(--gold); }
+
+.sun-arc-wrap { flex: 1; padding: 0 0.5rem; }
+.sun-arc-svg { width: 100%; max-width: 200px; display: block; margin: 0 auto; overflow: visible; }
+#sunDot { transition: cx 0.8s ease, cy 0.8s ease; }
+
+/* ── Right panel ─────────────────────────────────────────────────────── */
+.right-panel {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+
+/* AQI card */
+.aqi-card { padding-bottom: 1rem; }
+.aqi-badge {
+  font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 50px;
+  font-weight: 700; background: rgba(52,211,153,0.2); color: var(--teal);
+}
+.aqi-grid {
+  display: grid; grid-template-columns: repeat(5,1fr);
+  gap: 0.5rem; padding: 0.5rem 1rem 0.5rem;
+  text-align: center;
+}
+.aqi-item { }
+.aqi-val { font-family: var(--font-d); font-size: 1.1rem; font-weight: 800; color: var(--text1); }
+.aqi-lbl { font-size: 0.65rem; color: var(--text3); margin-top: 0.15rem; }
+
+/* Hourly */
+.hourly-card { flex: 1; }
+.hourly-scroll { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.hourly-scroll::-webkit-scrollbar { height: 3px; }
+.hourly-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+.hourly-row {
+  display: flex; gap: 0.5rem;
+  padding: 0.3rem 1rem 0.8rem;
+  min-width: max-content;
+}
+.hourly-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 0.6rem 0.7rem;
+  min-width: 62px; cursor: default;
+  transition: background 0.2s, transform 0.15s;
+  animation: fadeUp 0.4s ease both;
+}
+.hourly-chip:hover { background: var(--card-b); transform: translateY(-3px); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.h-time { font-size: 0.66rem; color: var(--text3); }
+
+/* Hourly icon — background-image driven */
+.h-icon {
+  width: 34px; height: 34px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.h-temp { font-family: var(--font-d); font-size: 0.95rem; font-weight: 700; }
+.h-rain { font-size: 0.62rem; color: var(--accent); }
+
+/* ── Forecast section ────────────────────────────────────────────────── */
+.forecast-section {
+  grid-column: 1 / -1;
+  padding-bottom: 1.2rem;
+}
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+}
+
+.fc-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem 0.75rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+  animation: fadeUp 0.4s ease both;
+}
+.fc-card:hover {
+  background: var(--card-b);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+
+.fc-day  { font-family: var(--font-d); font-size: 1rem; font-weight: 800; color: var(--text1); }
+.fc-date { font-size: 0.72rem; color: var(--text3); }
+
+/* Forecast icon — background-image driven */
+.fc-icon {
+  width: 56px; height: 56px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.fc-desc { font-size: 0.72rem; color: var(--text2); text-align: center; line-height: 1.3; }
+
+.fc-temps {
+  display: flex; gap: 0.5rem; align-items: baseline;
+  font-family: var(--font-d);
+}
+.fc-max { font-size: 1.25rem; font-weight: 800; }
+.fc-min { font-size: 0.9rem; color: var(--text3); }
+
+.fc-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; }
+.fc-pill {
+  font-size: 0.64rem; padding: 0.15rem 0.45rem;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 50px; color: var(--text2);
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 1rem; padding: 5rem 2rem;
+  text-align: center;
+}
+
+/* Empty state hero icon — large sun */
+.empty-icon {
+  width: 96px; height: 96px;
+  display: inline-block;
+  background-image: var(--icon-sun);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  animation: float 4s ease-in-out infinite;
+}
+
+.empty-state h2 {
+  font-family: var(--font-d); font-size: 1.9rem; font-weight: 900;
+  color: var(--text1);
+}
+.empty-state p { color: var(--text2); max-width: 360px; line-height: 1.6; }
+
+.empty-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+.pill-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 50px;
+  padding: 0.65rem 1.4rem;
+  font-family: var(--font-b); font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(74,158,255,0.35);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.pill-btn:hover { opacity: 0.88; transform: translateY(-2px); }
+
+.recent-searches { margin-top: 0.5rem; }
+.recent-title { font-size: 0.75rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+.recent-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.recent-chip {
+  padding: 0.35rem 0.85rem;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  font-size: 0.82rem; color: var(--text2);
+  cursor: pointer; transition: all 0.2s;
+}
+.recent-chip:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .right-panel { grid-column: 1; grid-row: 2; flex-direction: row; }
+  .aqi-card, .hourly-card { flex: 1; }
+  .forecast-section { grid-column: 1; }
+  .forecast-grid { grid-template-columns: repeat(3,1fr); }
+  .hero-stats-mini { display: none; }
+}
+
+@media (max-width: 600px) {
+  .topbar { gap: 0.5rem; }
+  .mode-btns { display: none; }
+  .right-panel { flex-direction: column; }
+  .forecast-grid { grid-template-columns: repeat(2,1fr); }
+  .hero-top { flex-direction: column; }
+}
+

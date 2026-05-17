@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>WeatherWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body class="cond-default">
+
+<!-- ═══ TOPBAR ══════════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="brand">
+    <img src="https://openweathermap.org/img/wn/02d@2x.png" class="brand-icon" alt="logo"/>
+    <span>WeatherWise</span>
+  </div>
+
+  <div class="search-area">
+    <div class="search-box" id="searchBox">
+      <input type="text" id="cityInput" placeholder="Search city..." autocomplete="off"/>
+      <button class="search-btn" id="searchBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <button class="loc-btn" id="locBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+    Current Location
+  </button>
+
+  <div class="mode-btns">
+    <button class="mode-btn" id="lightBtn" onclick="setTheme('light')">☀ Light Mode</button>
+    <button class="mode-btn active" id="darkBtn"  onclick="setTheme('dark')">🌙 Dark Mode</button>
+  </div>
+</header>
+
+<!-- ═══ LOADER ═══════════════════════════════════════════════════════════ -->
+<div class="loader-overlay" id="loader">
+  <div class="loader-box">
+    <div class="spin-ring"></div>
+    <p>Fetching weather data…</p>
+  </div>
+</div>
+
+<!-- ═══ ERROR ════════════════════════════════════════════════════════════ -->
+<div class="error-toast" id="errorToast">
+  <span class="err-icon">⚠</span>
+  <span id="errorMsg">Something went wrong.</span>
+  <button onclick="document.getElementById('errorToast').classList.remove('show')">✕</button>
+</div>
+
+<!-- ═══ MAIN ══════════════════════════════════════════════════════════════ -->
+<main class="main-grid" id="mainContent" style="display:none">
+
+  <!-- ─── LEFT: Current weather hero ──────────────────────────────────── -->
+  <section class="weather-hero card" id="weatherHero">
+    <div class="hero-bg-overlay" id="heroBg"></div>
+
+    <div class="hero-top">
+      <div class="hero-city-info">
+        <h1 class="hero-city" id="heroCity">—</h1>
+        <div class="hero-datetime" id="heroDatetime">—</div>
+      </div>
+      <div class="hero-stats-mini">
+        <div class="mini-stat">
+          <span class="mini-icon">💧</span>
+          <div><div class="mini-label">Humidity</div><div class="mini-val" id="statHumidity">—%</div></div>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-icon">🌬</span>
+          <div><div class="mini-label">Wind Speed</div><div class="mini-val" id="statWind">— km/h</div></div>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-icon">🌡</span>
+          <div><div class="mini-label">Pressure</div><div class="mini-val" id="statPressure">— hPa</div></div>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-icon">👁</span>
+          <div><div class="mini-label">Visibility</div><div class="mini-val" id="statVisibility">— km</div></div>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-icon">☀</span>
+          <div><div class="mini-label">UV Index</div><div class="mini-val" id="statUV">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-center">
+      <img id="heroIcon" src="" alt="weather" class="hero-weather-icon float-anim"/>
+      <div class="hero-temp-block">
+        <div class="hero-temp" id="heroTemp">—°<span class="unit">C</span></div>
+        <div class="hero-desc" id="heroDesc">—</div>
+        <div class="hero-feels">Feels like <span id="heroFeels">—°C</span></div>
+      </div>
+    </div>
+
+    <div class="hero-sun">
+      <div class="sun-item">
+        <img src="https://openweathermap.org/img/wn/01d@2x.png" class="sun-img" alt="sunrise"/>
+        <div>
+          <div class="sun-label">Sunrise</div>
+          <div class="sun-val" id="heroSunrise">—</div>
+        </div>
+      </div>
+      <div class="sun-arc-wrap">
+        <svg viewBox="0 0 200 60" class="sun-arc-svg">
+          <path d="M10 55 Q100 -10 190 55" fill="none" stroke="rgba(255,210,70,0.35)" stroke-width="2" stroke-dasharray="4 3"/>
+          <circle cx="10" cy="55" r="4" fill="#facc15"/>
+          <circle cx="190" cy="55" r="4" fill="#f97316"/>
+          <circle id="sunDot" cx="10" cy="55" r="7" fill="#fde68a"/>
+        </svg>
+      </div>
+      <div class="sun-item">
+        <img src="https://openweathermap.org/img/wn/01n@2x.png" class="sun-img" alt="sunset"/>
+        <div>
+          <div class="sun-label">Sunset</div>
+          <div class="sun-val" id="heroSunset">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── RIGHT: 5-day + extra ─────────────────────────────────────────── -->
+  <aside class="right-panel">
+
+    <!-- AQI Card -->
+    <div class="card aqi-card">
+      <div class="card-title">
+        <span>🛡 Air Quality</span>
+        <span class="aqi-badge" id="aqiBadge">—</span>
+      </div>
+      <div class="aqi-grid">
+        <div class="aqi-item">
+          <div class="aqi-val" id="aqiPm25">—</div>
+          <div class="aqi-lbl">PM2.5</div>
+        </div>
+        <div class="aqi-item">
+          <div class="aqi-val" id="aqiPm10">—</div>
+          <div class="aqi-lbl">PM10</div>
+        </div>
+        <div class="aqi-item">
+          <div class="aqi-val" id="aqiO3">—</div>
+          <div class="aqi-lbl">O₃</div>
+        </div>
+        <div class="aqi-item">
+          <div class="aqi-val" id="aqiNo2">—</div>
+          <div class="aqi-lbl">NO₂</div>
+        </div>
+        <div class="aqi-item">
+          <div class="aqi-val" id="aqiCo">—</div>
+          <div class="aqi-lbl">CO</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hourly -->
+    <div class="card hourly-card">
+      <div class="card-title">⏱ Hourly Forecast</div>
+      <div class="hourly-scroll">
+        <div class="hourly-row" id="hourlyRow"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── BOTTOM: 5-day forecast ───────────────────────────────────────── -->
+  <section class="forecast-section card">
+    <div class="card-title">📅 5-Day Forecast</div>
+    <div class="forecast-grid" id="forecastGrid"></div>
+  </section>
+
+</main>
+
+<!-- ═══ EMPTY STATE ═══════════════════════════════════════════════════════ -->
+<div class="empty-state" id="emptyState">
+  <div class="empty-icon">🌍</div>
+  <h2>Welcome to WeatherWise</h2>
+  <p>Search for any city or use your current location to see real-time weather data.</p>
+  <div class="empty-actions">
+    <button class="pill-btn" id="locBtnBig"Use My Location</button>
+  </div>
+  <div class="recent-searches" id="recentWrap" style="display:none">
+    <div class="recent-title">Recent searches</div>
+    <div class="recent-chips" id="recentChips"></div>
+  </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
