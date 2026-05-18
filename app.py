@@ -5,7 +5,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-API_KEY  = os.environ.get("OWM_API_KEY", "a438f2cdc3fa06bfdb09b1efb591766d")
+API_KEY  = os.environ.get("OWM_API_KEY", "2fa27bcfb5e78502ee951f35ce96e114")
 BASE_URL = "https://api.openweathermap.org/data/2.5"
 AIR_URL  = "https://api.openweathermap.org/data/2.5/air_pollution"
 
